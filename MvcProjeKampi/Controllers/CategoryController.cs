@@ -1,5 +1,8 @@
 ﻿using BusinessLayer.Concrete;
+using BusinessLayer.ValidationRules;
+using DataAccessLayer.EntityFramework;
 using EntityLayer.Concrete;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +13,7 @@ namespace MvcProjeKampi.Controllers
 {
     public class CategoryController : Controller
     {
-        CategoryManager cm = new CategoryManager();
+        CategoryManager cm = new CategoryManager(new EfCategoryDal());
 
         // GET: Category
         public ActionResult Index()
@@ -20,9 +23,9 @@ namespace MvcProjeKampi.Controllers
 
         public ActionResult GetCategoryList()
         {
-            //var categoryValues = cm.GetAllBLL();
+            var categoryValues = cm.GetListBLL();
 
-            return View();
+            return View(categoryValues);
         }
 
         [HttpGet]
@@ -35,8 +38,24 @@ namespace MvcProjeKampi.Controllers
         public ActionResult AddCategory(Category p)
         {
             //cm.CategoryAddBLL(p);
+            CategoryValidator categoryValidator = new CategoryValidator();
+            ValidationResult results = categoryValidator.Validate(p);
 
-            return RedirectToAction("GetCategoryList");
+            if (results.IsValid)
+            {
+                cm.AddCategoryBLL(p);
+
+                return RedirectToAction("GetCategoryList");
+            }
+            else
+            {
+                foreach (var item in results.Errors)
+                {
+                    ModelState.AddModelError(item.PropertyName, item.ErrorMessage);
+                }
+            }
+
+            return View();
         }
     }
 }
