@@ -28,14 +28,14 @@ namespace BusinessLayer.Concrete
             throw new NotImplementedException();
         }
 
-        public List<Message> GetListInboxBLL()
+        public List<Message> GetListInboxBLL(string p)
         {
-            return _messageDal.List(x => x.ReceiverMail == "admin@gmail.com");
+            return _messageDal.List(x => x.ReceiverMail == p);
         }
 
-        public List<Message> GetListSendboxBLL()
+        public List<Message> GetListSendboxBLL(string p)
         {
-            return _messageDal.List(x => x.SenderMail == "admin@gmail.com");
+            return _messageDal.List(x => x.SenderMail == p);
         }
 
         public Message GetMessageByIDBLL(int id)

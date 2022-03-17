@@ -11,6 +11,8 @@ namespace BusinessLayer.Abstract
     {
         List<Content> GetListBLL();
 
+        List<Content> GetListByWriterBLL(int id);
+
         List<Content> GetListByHeadingId(int id);
 
         void AddContentBLL(Content content);

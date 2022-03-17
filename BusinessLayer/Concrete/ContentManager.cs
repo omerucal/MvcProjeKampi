@@ -20,7 +20,7 @@ namespace BusinessLayer.Concrete
 
         public void AddContentBLL(Content content)
         {
-            throw new NotImplementedException();
+            _contentDal.Insert(content);
         }
 
         public void DeleteContentBLL(Content content)
@@ -35,12 +35,17 @@ namespace BusinessLayer.Concrete
 
         public List<Content> GetListBLL()
         {
-            throw new NotImplementedException();
+            return _contentDal.List();
         }
 
         public List<Content> GetListByHeadingId(int id)
         {
             return _contentDal.List(x => x.HeadingId == id);
+        }
+
+        public List<Content> GetListByWriterBLL(int id)
+        {
+            return _contentDal.List(x => x.WriterId == id);
         }
 
         public void UpdateContentBLL(Content content)

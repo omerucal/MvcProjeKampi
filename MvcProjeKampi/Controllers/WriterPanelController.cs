@@ -1,0 +1,107 @@
+﻿using BusinessLayer.Concrete;
+using DataAccessLayer.Concrete;
+using DataAccessLayer.EntityFramework;
+using EntityLayer.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using PagedList;
+using PagedList.Mvc;
+
+namespace MvcProjeKampi.Controllers
+{
+    //[AllowAnonymous]
+    public class WriterPanelController : Controller
+    {
+        HeadingManager hm = new HeadingManager(new EfHeadingDal());
+        CategoryManager cm = new CategoryManager(new EfCategoryDal());
+        Context c = new Context();
+
+        public ActionResult WriterProfile()
+        {
+            return View();
+        }
+
+        public ActionResult MyHeading(string p)
+        {
+            p = (string)Session["WriterMail"];
+            var writerIdInfo = c.Writers.Where(x => x.WriterMail == p).Select(y => y.WriterId).FirstOrDefault();
+            var values = hm.GetListByWriterBLL(writerIdInfo);
+            return View(values);
+        }
+
+        [HttpGet]
+        public ActionResult HewHeading()
+        {
+            List<SelectListItem> valueCategory = (from x in cm.GetListBLL()
+                                                  select new SelectListItem
+                                                  {
+                                                      Text = x.CategoryName,
+                                                      Value = x.CategoryId.ToString()
+                                                  }).ToList();
+            ViewBag.vlc = valueCategory;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult HewHeading(Heading p)
+        {
+            string writerMailInfo = (string)Session["WriterMail"];
+            var writerIdInfo = c.Writers.Where(x => x.WriterMail == writerMailInfo).Select(y => y.WriterId).FirstOrDefault();
+            p.HeadingDate = DateTime.Parse(DateTime.Now.ToShortDateString());
+            p.WriterId = writerIdInfo;
+            p.HeadingStatus = true;
+            hm.AddHeadingBLL(p);
+
+            return RedirectToAction("MyHeading");
+        }
+
+        [HttpGet]
+        public ActionResult EditHeading(int id)
+        {
+            List<SelectListItem> valueCategory = (from x in cm.GetListBLL()
+                                                  select new SelectListItem
+                                                  {
+                                                      Text = x.CategoryName,
+                                                      Value = x.CategoryId.ToString()
+                                                  }).ToList();
+            ViewBag.vlc = valueCategory;
+            var headingValue = hm.GetHeadingByIDBLL(id);
+
+            return View(headingValue);
+        }
+
+        [HttpPost]
+        public ActionResult EditHeading(Heading p)
+        {
+            hm.UpdateHeadingBLL(p);
+
+            return RedirectToAction("MyHeading");
+        }
+
+        public ActionResult DeleteHeading(int id)
+        {
+            var headingValue = hm.GetHeadingByIDBLL(id);
+            headingValue.HeadingStatus = false;
+            hm.DeleteHeadingBLL(headingValue);
+
+            return RedirectToAction("MyHeading");
+        }
+
+        public ActionResult AllHeading(int p = 1)
+        {
+            var headings = hm.GetListBLL().ToPagedList(p, 4);
+
+            return View(headings);
+        }
+    }
+}
+
+/*
+ * <customErrors mode="On">
+			<error statusCode="404" redirect="/ErrorPage/Page404/" />
+		</customErrors>
+ */

@@ -15,6 +15,7 @@ namespace MvcProjeKampi.Controllers
 
         ContactValidator cv = new ContactValidator();
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             var contactValues = cm.GetListBLL();
