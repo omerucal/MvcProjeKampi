@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "ChartSample";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    var graphic = new Chart(width: 400, height: 400);
+    graphic.AddTitle(text: "1. Sınıf 2014 Bahar Dönemi Not Ortalamaları");
+    graphic.AddLegend(title: "Veriler");
+
+    graphic.AddSeries(
+        name: "Ortalamalar",
+        chartType: "Pie",
+        xValue: new[] { "BM101", "BM102", "BM103" },
+        yValues: new[] { 80, 40, 60 }
+        );
+
+    graphic.Write();
+}
+
